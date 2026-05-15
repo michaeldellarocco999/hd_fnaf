@@ -5,37 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FNAF Classic Web Arcade</title>
     <style>
-        :root { --primary: #ff1a1a; --bg-dark: #0a0a0a; --bg-panel: #141414; --border: #262626; }
+        :root { --primary: #ff1a1a; --bg-dark: #0a0a0a; --bg-panel: #121212; --border: #222222; }
         body { background-color: var(--bg-dark); color: #fff; font-family: sans-serif; margin: 0; padding: 20px; box-sizing: border-box; }
-        header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px dashed var(--border); }
-        h1 { margin: 0 0 5px 0; font-size: 2.2rem; text-transform: uppercase; color: var(--primary); text-shadow: 0 0 10px rgba(255,26,26,0.3); }
-        p { margin: 0; color: #888; font-size: 0.95rem; }
-        .arcade-container { max-width: 1100px; margin: 0 auto; }
-        .screen-frame { background: var(--bg-panel); border: 3px solid #1f1f1f; border-radius: 12px; padding: 12px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
-        .screen-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 5px; }
-        #current-title { font-weight: bold; font-size: 1.1rem; color: #fff; }
-        .screen-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+        header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        h1 { margin: 0 0 5px 0; font-size: 1.8rem; text-transform: uppercase; color: var(--primary); font-weight: bold; tracking-letter: 1px; }
+        p { margin: 0; color: #666; font-size: 0.9rem; text-transform: uppercase; }
+        
+        .arcade-container { max-width: 1000px; margin: 0 auto; transition: max-width 0.3s ease; }
+        .arcade-container.expanded { max-width: 100%; }
+        
+        .screen-frame { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; padding: 10px; margin-bottom: 25px; }
+        .screen-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        #current-title { font-weight: bold; font-size: 1rem; color: #fff; text-transform: uppercase; }
+        
+        /* Controls Layout */
+        .controls { display: flex; gap: 10px; }
+        .zoom-btn { background: #1c1c1c; border: 1px solid var(--border); color: #fff; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 3px; text-transform: uppercase; transition: background 0.2s; }
+        .zoom-btn:hover { background: var(--primary); border-color: var(--primary); }
+        
+        .screen-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; border: 1px solid var(--border); }
         .screen-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
-        .game-btn { background: var(--bg-panel); border: 2px solid var(--border); border-radius: 10px; padding: 15px; cursor: pointer; text-align: center; transition: all 0.25s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100px; }
-        .game-btn:hover { border-color: var(--primary); transform: translateY(-3px); background: #1c1c1c; }
-        .game-btn.active { border-color: var(--primary); background: #261010; }
-        .game-btn .icon { font-size: 2rem; margin-bottom: 8px; }
-        .game-btn span { font-weight: 600; font-size: 0.9rem; color: #ccc; }
+        
+        /* Button Matrix Grid */
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .game-btn { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; padding: 10px; cursor: pointer; text-align: center; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 120px; }
+        .game-btn:hover { border-color: var(--primary); background: #161616; }
+        .game-btn.active { border-color: var(--primary); background: #1c1414; }
+        
+        /* Asset Image Management Styling */
+        .game-logo { width: 100%; height: 75px; object-fit: contain; margin-bottom: 8px; filter: grayscale(30%); transition: filter 0.2s; }
+        .game-btn:hover .game-logo, .game-btn.active .game-logo { filter: grayscale(0%); }
+        .game-btn span { font-weight: bold; font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
+        .game-btn:hover span, .game-btn.active span { color: #fff; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🐻 FNAF Classic Web Arcade 🔌</h1>
-        <p>Select a game from your console below to load the live browser runtime.</p>
+        <h1>Five Nights at Freddy's Classic Arcade</h1>
+        <p>Select a local subfolder entry directory from the system dashboard panel</p>
     </header>
 
-    <div class="arcade-container">
+    <div class="arcade-container" id="main-layout">
         <div class="screen-frame">
             <div class="screen-header">
-                <div id="current-title">🕹️ Select a Feed</div>
-                <div style="color: var(--primary); font-size: 0.8rem; font-family: monospace; font-weight: bold; background: rgba(255,26,26,0.1); padding: 4px 8px; border-radius: 4px;">LIVE</div>
+                <div id="current-title">Select a Feed</div>
+                <div class="controls">
+                    <button class="zoom-btn" onclick="toggleZoom()">Zoom In / Out</button>
+                </div>
             </div>
             <div class="screen-wrapper">
                 <iframe id="arcade-screen" src="about:blank" allowfullscreen></iframe>
@@ -43,41 +60,57 @@
         </div>
 
         <div class="game-grid">
+            <!-- Utilizing default image icons embedded directly inside folder structures -->
             <button class="game-btn" onclick="loadGame('Five Nights at Freddy\'s 1', './1/', this)">
-                <div class="icon">🐻</div><span>FNAF 1</span>
+                <img class="game-logo" src="./1/favicon.ico" onerror="this.src='https://placehold.co'" alt="FNAF 1 Logo">
+                <span>FNAF 1</span>
             </button>
             <button class="game-btn" onclick="loadGame('Five Nights at Freddy\'s 2', './2/', this)">
-                <div class="icon">🐰</div><span>FNAF 2</span>
+                <img class="game-logo" src="./2/favicon.ico" onerror="this.src='https://placehold.co'" alt="FNAF 2 Logo">
+                <span>FNAF 2</span>
             </button>
             <button class="game-btn" onclick="loadGame('Five Nights at Freddy\'s 3', './3/', this)">
-                <div class="icon">🐤</div><span>FNAF 3</span>
+                <img class="game-logo" src="./3/favicon.ico" onerror="this.src='https://placehold.co'" alt="FNAF 3 Logo">
+                <span>FNAF 3</span>
             </button>
             <button class="game-btn" onclick="loadGame('Five Nights at Freddy\'s 4', './4/', this)">
-                <div class="icon">🦊</div><span>FNAF 4</span>
+                <img class="game-logo" src="./4/favicon.ico" onerror="this.src='https://placehold.co'" alt="FNAF 4 Logo">
+                <span>FNAF 4</span>
             </button>
             <button class="game-btn" onclick="loadGame('FNAF: Sister Location', './sl/', this)">
-                <div class="icon">🎪</div><span>Sister Location</span>
+                <img class="game-logo" src="./sl/favicon.ico" onerror="this.src='https://placehold.co'" alt="Sister Location Logo">
+                <span>Sister Location</span>
             </button>
             <button class="game-btn" onclick="loadGame('Freddy Fazbear\'s Pizzeria Simulator', './ps/', this)">
-                <div class="icon">🍕</div><span>Pizzeria Sim</span>
+                <img class="game-logo" src="./ps/favicon.ico" onerror="this.src='https://placehold.co'" alt="Pizzeria Sim Logo">
+                <span>Pizzeria Sim</span>
             </button>
             <button class="game-btn" onclick="loadGame('Ultimate Custom Night', './ucn/', this)">
-                <div class="icon">👁️</div><span>UCN</span>
+                <img class="game-logo" src="./ucn/favicon.ico" onerror="this.src='https://placehold.co'" alt="UCN Logo">
+                <span>UCN</span>
             </button>
             <button class="game-btn" onclick="loadGame('FNAF World', './w/', this)">
-                <div class="icon">🌐</div><span>FNAF World</span>
+                <img class="game-logo" src="./w/favicon.ico" onerror="this.src='https://placehold.co'" alt="FNAF World Logo">
+                <span>FNAF World</span>
             </button>
         </div>
     </div>
 
     <script>
         function loadGame(title, url, element) {
-            document.getElementById('current-title').innerText = "🕹️ Playing: " + title;
+            document.getElementById('current-title').innerText = title;
             document.getElementById('arcade-screen').src = url;
             const buttons = document.querySelectorAll('.game-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
         }
+
+        // Toggles theater view grid box size
+        function toggleZoom() {
+            const container = document.getElementById('main-layout');
+            container.classList.toggle('expanded');
+        }
+
         window.onload = function() {
             const firstButton = document.querySelector('.game-grid .game-btn');
             if(firstButton) firstButton.click();
