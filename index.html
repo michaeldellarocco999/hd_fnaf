@@ -8,31 +8,29 @@
         :root { --primary: #ff1a1a; --bg-dark: #0a0a0a; --bg-panel: #121212; --border: #222222; }
         body { background-color: var(--bg-dark); color: #fff; font-family: sans-serif; margin: 0; padding: 20px; box-sizing: border-box; }
         header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
-        h1 { margin: 0 0 5px 0; font-size: 1.8rem; text-transform: uppercase; color: var(--primary); font-weight: bold; tracking-letter: 1px; }
+        h1 { margin: 0 0 5px 0; font-size: 1.8rem; text-transform: uppercase; color: var(--primary); font-weight: bold; letter-spacing: 1px; }
         p { margin: 0; color: #666; font-size: 0.9rem; text-transform: uppercase; }
         
-        .arcade-container { max-width: 1000px; margin: 0 auto; transition: max-width 0.3s ease; }
-        .arcade-container.expanded { max-width: 100%; }
-        
+        .arcade-container { max-width: 1000px; margin: 0 auto; }
         .screen-frame { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; padding: 10px; margin-bottom: 25px; }
         .screen-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         #current-title { font-weight: bold; font-size: 1rem; color: #fff; text-transform: uppercase; }
         
-        /* Controls Layout */
+        /* Control Tools Bar Layout */
         .controls { display: flex; gap: 10px; }
-        .zoom-btn { background: #1c1c1c; border: 1px solid var(--border); color: #fff; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 3px; text-transform: uppercase; transition: background 0.2s; }
-        .zoom-btn:hover { background: var(--primary); border-color: var(--primary); }
+        .fullscreen-btn { background: #1c1c1c; border: 1px solid var(--border); color: #fff; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 3px; text-transform: uppercase; transition: background 0.2s; }
+        .fullscreen-btn:hover { background: var(--primary); border-color: var(--primary); }
         
         .screen-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; border: 1px solid var(--border); }
         .screen-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
-        /* Button Matrix Grid */
+        /* Button Selection Grid */
         .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
         .game-btn { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; padding: 10px; cursor: pointer; text-align: center; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 120px; }
         .game-btn:hover { border-color: var(--primary); background: #161616; }
         .game-btn.active { border-color: var(--primary); background: #1c1414; }
         
-        /* Asset Image Management Styling */
+        /* Official Logo Layout Image System */
         .game-logo { width: 100%; height: 75px; object-fit: contain; margin-bottom: 8px; filter: grayscale(30%); transition: filter 0.2s; }
         .game-btn:hover .game-logo, .game-btn.active .game-logo { filter: grayscale(0%); }
         .game-btn span { font-weight: bold; font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
@@ -46,21 +44,20 @@
         <p>Select a local subfolder entry directory from the system dashboard panel</p>
     </header>
 
-    <div class="arcade-container" id="main-layout">
+    <div class="arcade-container">
         <div class="screen-frame">
             <div class="screen-header">
                 <div id="current-title">Select a Feed</div>
                 <div class="controls">
-                    <button class="zoom-btn" onclick="toggleZoom()">Zoom In / Out</button>
+                    <button class="fullscreen-btn" onclick="openFullscreen()">Fullscreen</button>
                 </div>
             </div>
             <div class="screen-wrapper">
-                <iframe id="arcade-screen" src="about:blank" allowfullscreen></iframe>
+                <iframe id="arcade-screen" src="about:blank" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
             </div>
         </div>
 
         <div class="game-grid">
-            <!-- Utilizing default image icons embedded directly inside folder structures -->
             <button class="game-btn" onclick="loadGame('Five Nights at Freddy\'s 1', './1/', this)">
                 <img class="game-logo" src="./1/favicon.ico" onerror="this.src='https://placehold.co'" alt="FNAF 1 Logo">
                 <span>FNAF 1</span>
@@ -105,10 +102,16 @@
             element.classList.add('active');
         }
 
-        // Toggles theater view grid box size
-        function toggleZoom() {
-            const container = document.getElementById('main-layout');
-            container.classList.toggle('expanded');
+        // Activates Browser Native Fullscreen on the frame element
+        function openFullscreen() {
+            const gameScreen = document.getElementById('arcade-screen');
+            if (gameScreen.requestFullscreen) {
+                gameScreen.requestFullscreen();
+            } else if (gameScreen.webkitRequestFullscreen) { /* Safari */
+                gameScreen.webkitRequestFullscreen();
+            } else if (gameScreen.msRequestFullscreen) { /* IE11 */
+                gameScreen.msRequestFullscreen();
+            }
         }
 
         window.onload = function() {
